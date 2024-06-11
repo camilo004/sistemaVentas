@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interfaz CRUD de Clientes</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Interfaz CRUD de Clientes</h1>
+
+    <!-- Formulario para crear un nuevo cliente -->
+    <h2>Crear Cliente</h2>
+    <form id="formCrearCliente">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" required><br>
+        <!-- Agrega más campos según la estructura de Cliente -->
+        <button type="submit">Crear</button>
+    </form>
+
+    <!-- Tabla para mostrar la lista de clientes -->
+    <h2>Lista de Clientes</h2>
+    <table id="tablaClientes" border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <!-- Agrega más columnas según la estructura de Cliente -->
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>
+        // Función para cargar la lista de clientes al cargar la página
+        $(document).ready(function() {
+            cargarClientes();
+        });
+
+        // Función para cargar la lista de clientes desde el backend
+        function cargarClientes() {
+            $.ajax({
+                url: '/api/clientes',
+                type: 'GET',
+                success: function(data) {
+                    mostrarClientes(data);
+                }
+            });
+        }
+
+        // Función para mostrar la lista de clientes en la tabla
+        function mostrarClientes(clientes) {
+            var tbody = $('#tablaClientes tbody');
+            tbody.empty();
+            clientes.forEach(function(cliente) {
+                var fila = '<tr>';
+                fila += '<td>' + cliente.id + '</td>';
+                fila += '<td>' + cliente.nombre + '</td>';
+                // Agrega más columnas según la estructura de Cliente
+                fila += '<td><button onclick="editarCliente(\'' + cliente.id + '\')">Editar</button>';
+                fila += '<button onclick="eliminarCliente(\'' + cliente.id + '\')">Eliminar</button></td>';
+                fila += '</tr>';
+                tbody.append(fila);
+            });
+        }
+
+        // Función para enviar la solicitud para crear un nuevo cliente
+        $('#formCrearCliente').submit(function(event) {
+            event.preventDefault();
+            var formData = $(this).serialize();
+            $.ajax({
+                url: '/api/clientes',
+                type: 'POST',
+                data: formData,
+                success: function() {
+                    cargarClientes();
+                    $('#formCrearCliente')[0].reset();
+                }
+            });
+        });
+
+        // Función para enviar la solicitud para editar un cliente
+        function editarCliente(id) {
+            // Implementa la lógica para editar un cliente
+        }
+
+        // Función para enviar la solicitud para eliminar un cliente
+        function eliminarCliente(id) {
+            $.ajax({
+                url: '/api/clientes/' + id,
+                type: 'DELETE',
+                success: function() {
+                    cargarClientes();
+                }
+            });
+        }
+    </script>
+</body>
+</html>
